@@ -5,14 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Thermometer, Droplets, Gauge, Activity } from "lucide-react";
 
 interface SensorData {
-  S0: number;
-  A1: number;
-  A2: number;
-  B1: number;
-  P1: number;
-  P2: number;
-  TDS: number;
-  timestamp: number;
+  flow_lpm: number;
+  inlet_temp_c: number;
+  outlet_temp_c: number;
+  panel_temp_c: number;
+  pump_pwm: number;
+  manual_cmd: boolean;
+  mode: string;
+  ts: number;
 }
 
 const Dashboard = () => {
@@ -20,28 +20,17 @@ const Dashboard = () => {
   const [moduleInfo, setModuleInfo] = useState<any>(null);
 
   useEffect(() => {
-    // Listen to sensor data
-    const sensorRef = ref(database, "modules/module_1/sensors");
+    // Listen to live sensor data
+    const sensorRef = ref(database, "therma/live");
     const unsubscribeSensors = onValue(sensorRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Get the most recent entry
-        const keys = Object.keys(data).sort().reverse();
-        if (keys.length > 0) {
-          setSensorData(data[keys[0]]);
-        }
+        setSensorData(data);
       }
-    });
-
-    // Listen to module info
-    const infoRef = ref(database, "modules/module_1/info");
-    const unsubscribeInfo = onValue(infoRef, (snapshot) => {
-      setModuleInfo(snapshot.val());
     });
 
     return () => {
       unsubscribeSensors();
-      unsubscribeInfo();
     };
   }, []);
 
@@ -59,12 +48,7 @@ const Dashboard = () => {
               THERMA Dashboard
             </span>
           </h1>
-          {moduleInfo && (
-            <div className="text-muted-foreground">
-              <p className="text-lg">{moduleInfo.name}</p>
-              <p>{moduleInfo.location}</p>
-            </div>
-          )}
+          <p className="text-muted-foreground text-lg">Live System Monitoring</p>
         </div>
 
         {/* Status Indicator */}
@@ -76,9 +60,11 @@ const Dashboard = () => {
                 <div className="absolute inset-0 w-4 h-4 bg-primary rounded-full animate-ping" />
               </div>
               <div>
-                <p className="text-lg font-semibold">System Status: Active</p>
+                <p className="text-lg font-semibold">
+                  System Status: {sensorData?.mode === "auto" ? "Auto" : "Manual"}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  Real-time monitoring active • Last update: {sensorData ? new Date(sensorData.timestamp).toLocaleTimeString() : "N/A"}
+                  Real-time monitoring • Pump: {sensorData?.pump_pwm || 0} PWM
                 </p>
               </div>
             </div>
@@ -88,70 +74,68 @@ const Dashboard = () => {
         {/* Sensor Data Grid */}
         {sensorData ? (
           <>
-            {/* Flow Sensors */}
+            {/* Temperature Sensors */}
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Droplets className="h-6 w-6 text-primary" />
-                Flow Sensors (L/min)
+                <Thermometer className="h-6 w-6 text-primary" />
+                Temperature Sensors (°C)
               </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <Card className="p-6 border-border bg-card hover:border-primary/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">S0 - Main Flow</div>
-                  <div className="text-3xl font-bold text-primary">{formatValue(sensorData.S0)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Liters per minute</div>
+                  <div className="text-sm text-muted-foreground mb-1">Panel Temperature</div>
+                  <div className="text-4xl font-bold text-primary">{formatValue(sensorData.panel_temp_c, 1)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
                 </Card>
 
                 <Card className="p-6 border-border bg-card hover:border-secondary/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">A1 - Branch A1</div>
-                  <div className="text-3xl font-bold text-secondary">{formatValue(sensorData.A1)}</div>
+                  <div className="text-sm text-muted-foreground mb-1">Inlet Temperature</div>
+                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.inlet_temp_c, 1)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
+                </Card>
+
+                <Card className="p-6 border-border bg-card hover:border-accent/50 transition-colors">
+                  <div className="text-sm text-muted-foreground mb-1">Outlet Temperature</div>
+                  <div className="text-4xl font-bold text-accent">{formatValue(sensorData.outlet_temp_c, 1)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
+                </Card>
+              </div>
+            </div>
+
+            {/* Flow & Pump */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                <Droplets className="h-6 w-6 text-secondary" />
+                Coolant System
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="p-6 border-border bg-card hover:border-secondary/50 transition-colors">
+                  <div className="text-sm text-muted-foreground mb-1">Flow Rate</div>
+                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.flow_lpm, 1)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Liters per minute</div>
                 </Card>
 
                 <Card className="p-6 border-border bg-card hover:border-accent/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">A2 - Branch A2</div>
-                  <div className="text-3xl font-bold text-accent">{formatValue(sensorData.A2)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Liters per minute</div>
-                </Card>
-
-                <Card className="p-6 border-border bg-card hover:border-primary/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">B1 - Branch B1</div>
-                  <div className="text-3xl font-bold text-primary">{formatValue(sensorData.B1)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Liters per minute</div>
+                  <div className="text-sm text-muted-foreground mb-1">Pump PWM</div>
+                  <div className="text-4xl font-bold text-accent">{sensorData.pump_pwm}</div>
+                  <div className="text-xs text-muted-foreground mt-1">PWM value (0-255)</div>
                 </Card>
               </div>
             </div>
 
-            {/* Pressure Sensors */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Gauge className="h-6 w-6 text-secondary" />
-                Pressure Sensors
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <Card className="p-6 border-border bg-card hover:border-secondary/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">P1 - Inlet Pressure</div>
-                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.P1)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Pressure units</div>
-                </Card>
-
-                <Card className="p-6 border-border bg-card hover:border-secondary/50 transition-colors">
-                  <div className="text-sm text-muted-foreground mb-1">P2 - Outlet Pressure</div>
-                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.P2)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Pressure units</div>
-                </Card>
-              </div>
-            </div>
-
-            {/* Water Quality */}
+            {/* Temperature Differential */}
             <div>
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Activity className="h-6 w-6 text-accent" />
-                Water Quality
+                <Gauge className="h-6 w-6 text-primary" />
+                System Performance
               </h2>
-              <Card className="p-6 border-border bg-card hover:border-accent/50 transition-colors">
-                <div className="text-sm text-muted-foreground mb-1">TDS - Total Dissolved Solids</div>
-                <div className="text-4xl font-bold text-accent">{sensorData.TDS}</div>
-                <div className="text-xs text-muted-foreground mt-1">Parts per million (ppm)</div>
+              <Card className="p-6 border-border bg-card hover:border-primary/50 transition-colors">
+                <div className="text-sm text-muted-foreground mb-1">Temperature Differential (ΔT)</div>
+                <div className="text-4xl font-bold text-primary">
+                  {formatValue(sensorData.outlet_temp_c - sensorData.inlet_temp_c, 1)}°C
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Heat extraction: Outlet - Inlet
+                </div>
               </Card>
             </div>
           </>
@@ -168,16 +152,16 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold mb-4">System Information</h3>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Module ID:</span>
-              <span className="ml-2 font-mono">module_1</span>
+              <span className="text-muted-foreground">Database Path:</span>
+              <span className="ml-2 font-mono">therma/live</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Controller:</span>
-              <span className="ml-2">ESP32 (FCCID: 2A53N-EPS32)</span>
+              <span className="text-muted-foreground">Mode:</span>
+              <span className="ml-2">{sensorData?.mode || "Unknown"}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Update Interval:</span>
-              <span className="ml-2">2 seconds</span>
+              <span className="text-muted-foreground">Manual Override:</span>
+              <span className="ml-2">{sensorData?.manual_cmd ? "Enabled" : "Disabled"}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Database:</span>
