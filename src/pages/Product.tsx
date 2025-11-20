@@ -10,8 +10,8 @@ const Product = () => {
         <div className="container relative mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <img src="/therma-logo-transparent.png" alt="THERMA Logo" className="h-16 w-16" />
-              <h1 className="text-5xl font-bold">
+              <img src="/therma-logo-transparent.png" alt="THERMA Logo" className="h-20 w-20" />
+              <h1 className="text-6xl font-bold">
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   THERMA System
                 </span>
