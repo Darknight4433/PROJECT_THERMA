@@ -13,12 +13,12 @@ const Home = () => {
         
         <div className="container relative mx-auto px-4 py-24 md:py-32">
           <div className="flex flex-col items-center text-center space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-2 text-sm">
-              <img src="/therma-logo-transparent.png" alt="Logo" className="h-4 w-4" />
+            <div className="inline-flex items-center gap-3 rounded-full border border-primary/50 bg-primary/10 px-4 py-2 text-sm">
+              <img src="/therma-logo-transparent.png" alt="Logo" className="h-6 w-6" />
               <span className="text-foreground">Next-Gen Solar Thermal Management</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold max-w-4xl">
+            <h1 className="text-6xl md:text-8xl font-bold max-w-4xl">
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 THERMA
               </span>
