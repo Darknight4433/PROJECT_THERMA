@@ -9,11 +9,11 @@ const Product = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
         <div className="container relative mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="flex items-center justify-center gap-2 mb-6">
               <img src="/therma-logo-transparent.png" alt="THERMA Logo" className="h-16 w-16" />
               <h1 className="text-5xl font-bold">
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  THERMA™ System
+                  THERMA System
                 </span>
               </h1>
             </div>
