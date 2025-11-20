@@ -22,13 +22,13 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <img
               src="/therma-logo-transparent.png"
               alt="THERMA Logo"
-              className="h-14 w-14 transition-transform group-hover:scale-110"
+              className="h-10 w-10 transition-transform group-hover:scale-110"
             />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <span className="text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               THERMA
             </span>
           </Link>
