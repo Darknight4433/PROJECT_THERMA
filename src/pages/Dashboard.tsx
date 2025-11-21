@@ -73,28 +73,28 @@ const Dashboard = () => {
         {/* Sensor Data Grid */}
         {sensorData ? (
           <>
-            {/* Live Temperature Sensors */}
+            {/* Live Sensor Data */}
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                 <Thermometer className="h-6 w-6 text-primary" />
-                Live Temperature Sensors (°C)
+                Live Sensor Data
               </h2>
               <div className="grid md:grid-cols-3 gap-4">
                 <Card className="p-6 border-border bg-card hover:border-primary/50 transition-colors">
                   <div className="text-sm text-muted-foreground mb-1">Panel Temperature (Live)</div>
-                  <div className="text-4xl font-bold text-primary">{formatValue(sensorData.panel_temp_c, 1)}</div>
+                  <div className="text-4xl font-bold text-primary">{formatValue(sensorData.panel_temp_c, 0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
                 </Card>
 
                 <Card className="p-6 border-border bg-card hover:border-secondary/50 transition-colors">
                   <div className="text-sm text-muted-foreground mb-1">Inlet Temperature (Live)</div>
-                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.inlet_temp_c, 1)}</div>
+                  <div className="text-4xl font-bold text-secondary">{formatValue(sensorData.inlet_temp_c, 0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
                 </Card>
 
                 <Card className="p-6 border-border bg-card hover:border-accent/50 transition-colors">
                   <div className="text-sm text-muted-foreground mb-1">Outlet Temperature (Live)</div>
-                  <div className="text-4xl font-bold text-accent">{formatValue(sensorData.outlet_temp_c, 1)}</div>
+                  <div className="text-4xl font-bold text-accent">{formatValue(sensorData.outlet_temp_c, 0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Degrees Celsius</div>
                 </Card>
               </div>
